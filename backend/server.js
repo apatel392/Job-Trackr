@@ -26,5 +26,5 @@ app.use('/api/applications',appRoutes);
 app.get('/', (req,res) => res.send('JobTrackr API is up'));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => 
+app.listen(PORT, '0.0.0.0', () => 
     console.log(`server is listening on port ${PORT}`));
