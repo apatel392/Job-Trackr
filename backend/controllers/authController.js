@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validatePassword = require('../middleware/passwordValidator')
 
 exports.register = async(req, res) => {
     const {name, email, password} = req.body;
@@ -10,8 +11,9 @@ exports.register = async(req, res) => {
         );
         if (find.rows.length!=0)
             return res.status(400).json({message: 'User already Registered'});
-        if (!password || password.length==0)
-            return res.status(401).json({message:'Enter a valid password'});
+        const validator = validatePassword(password);
+        if (!validator.valid)
+            return res.status(400).json({ error: validator.message});
 
         const hashed = await bcrypt.hash(password,10);
         const result = await pool.query(
