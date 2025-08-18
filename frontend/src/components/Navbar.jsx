@@ -12,7 +12,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className='bg-red-600 text-white px-6 py-4 flex justify-between items-center shadow'>
+        <nav className='bg-gray-600 text-white px-6 py-4 flex justify-between items-center shadow'>
             <h1 className='text-lg font-bold'><Link to='/dashboard'>JobTrackr</Link></h1>
             <div className='space-x-4'>
                 <Link to="/dashboard" className="hover:underline">Dashboard</Link>
