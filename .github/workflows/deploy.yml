@@ -2,7 +2,7 @@ name: CI/CD Deploy
 
 on:
   push:
-    branches: [ "main" ]  # Trigger on main branch push
+    branches: [ "main" ]
 
 jobs:
   deploy-frontend:
@@ -16,22 +16,28 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
-          cd frontend   # adjust path if needed
+          cd frontend
           npm install
           npm run build
 
-      - name: Deploy to S3
-        uses: aws-actions/aws-s3-sync@v1
-        with:
-          args: --delete
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $AWS_REGION
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
-          SOURCE_DIR: frontend/dist
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync frontend/dist s3://$AWS_S3_BUCKET --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
 
   deploy-backend:
     runs-on: ubuntu-latest
