@@ -51,7 +51,7 @@ export default function JobDetailsModal({ job, onClose }) {
         >
           ✖  
         </button>
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid gap-7 lg:grid-cols-2">
         <div className="p-5">
         <h2 className="text-xl font-bold">{job.position}</h2>
         <p className="text-gray-600 dark:text-gray-300">{job.company}</p>
@@ -92,8 +92,8 @@ export default function JobDetailsModal({ job, onClose }) {
                     interviews.map(i => (
                       <li key={i.id} className="border-b pb-2">
                         <p className="text-sm">{new Date(i.interview_date).toLocaleString()}</p>
-                        {i.interview_type && <p className="text-xs">Type: {i.interview_type}</p>}
-                        {i.notes && <p className="text-xs text-gray-500">Notes: {i.notes}</p>}
+                        {i.interview_type && <p className="text-xs lg:text-base">Type: {i.interview_type}</p>}
+                        {i.notes && <p className="text-xs lg:text-base text-gray-400">Notes: {i.notes}</p>}
                         <button onClick={() => deleteInterview(i.id)}
                           className="text-xs hover:underline text-red-500 mt-1">
                           Delete
@@ -102,11 +102,15 @@ export default function JobDetailsModal({ job, onClose }) {
                     ))}
                 </ul></>
               )}
+              { job.status === 'rejected' ? (<p className="text-red-500 font-semibold mt-4">Cannot add interview for a rejected job.</p>) :
+                job.status == 'offer' ? (<p className="mt-4 text-green-500 font-semibold">🎉 Congratulations! You have been offered the job.</p>) :
+              ( 
               <div className="mt-4">
                 <h4 className="font-semibold text-sm">Add Interview</h4>
                 <input 
                   type="datetime-local"
-
+                  placeholder="Date of Interview"
+                  min={new Date().toISOString().slice(0,16)} 
                   value={newInterview.interview_date}
                   onChange={(e) => setNewInterview({...newInterview, interview_date:e.target.value})} 
                   className="w-full p-2 border-2 rounded mt-1 text-black dark:bg-gray-700 dark:text-white"
@@ -128,7 +132,8 @@ export default function JobDetailsModal({ job, onClose }) {
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded">
                     Add Interview
                 </button>
-              </div>
+              </div> ) 
+              }
         </div>
       </div>
       </div>
