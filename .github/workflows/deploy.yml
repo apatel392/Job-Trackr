@@ -34,11 +34,7 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync frontend/dist s3://$AWS_S3_BUCKET \
-          --delete \
-          --cache-control "max-age=0,no-cache,no-store,must-revalidate" \  
-          --exact-timestamps \
-          --guess-mime-type
+          aws s3 sync frontend/dist s3://$AWS_S3_BUCKET --delete
           
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
