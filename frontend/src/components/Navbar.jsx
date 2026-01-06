@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import UseTheme from '../hooks/useThemes';
+import geminiIcon from '../assets/Gemini.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -39,6 +40,14 @@ export default function Navbar() {
               ${isDark ? 'translate-x-6' : 'translate-x-0'}`}
           />
         </div>
+        
+        <Link to="/InterviewPrep" className="flex items-center">
+          <img
+            src={geminiIcon}
+            alt = "Interview Prep"
+            className="w-6 h-6 rounded object-contain hover:opacity-80 transition-opacity"
+          />
+        </Link>
 
         {/* Hamburger Button (always on right) */}
         <button 
@@ -93,6 +102,7 @@ export default function Navbar() {
           >
             Add Job
           </Link>
+
           <button 
             onClick={handleLogout} 
             className="bg-white text-blue-600 hover:bg-gray-100 rounded py-1 px-3 w-full text-left"

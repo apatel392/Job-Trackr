@@ -10,7 +10,7 @@ import PublicLayout from './components/PublicLayout';
 import LandingPage from './pages/LandingPage';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
-
+import InterviewPrep from './pages/InterviewPrep';
 
 function App() {
     return (
@@ -28,6 +28,7 @@ function App() {
                     <Route path='/dashboard' element = {<Dashboard/>} />
                     <Route path='/add' element={<AddJob/>} />
                     <Route path='/edit/:id' element={<EditJob/>} />
+                    <Route path='/InterviewPrep' element={<InterviewPrep/>} />
                 </Route>
             </Routes>
         </Router>

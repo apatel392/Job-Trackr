@@ -1,4 +1,10 @@
 const pool = require('../config/db');
+const fs = require("fs");
+const multer = require("multer");
+const path = require("path");
+const { parseResume } = require("../services/fileParser");
+const { generateInterviewQA } = require("../services/aiService");
+const upload = multer({ dest: "uploads/" });
 
 exports.getInterviews = async(req,res) => {
     try {
@@ -51,3 +57,34 @@ exports.deleteInterview = async(req,res) => {
         res.status(500).json({error: 'Failed to delete interview'});
     }
 };
+
+exports.generate = [
+  upload.single("res"), 
+  async (req, res) => {
+    try {
+      const jobDescription = req.body.jd;  
+      const resumeFile = req.file;        
+
+      if (!resumeFile) {
+        return res.status(400).json({ message: "Resume required" });
+      }
+      if (!jobDescription) {
+        return res.status(400).json({ message: "Job description required" });
+      }
+
+      // parse resume file
+      const resumeText = await parseResume(resumeFile);
+
+      // generate interview Q&A
+      const result = await generateInterviewQA(resumeText, jobDescription);
+
+      // clean up uploaded file
+      fs.unlinkSync(resumeFile.path);
+
+      res.json(result);
+    } catch (err) {
+      console.error("Interview QA generation error:", err.message);
+      res.status(500).json({ error: "Failed to generate Interview QA" });
+    }
+  },
+];
