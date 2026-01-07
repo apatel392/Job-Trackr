@@ -70,7 +70,7 @@ exports.forgotpassword = async(req, res) => {
         await pool.query('UPDATE users SET reset_token=$1, reset_token_expires=$2 WHERE email=$3',[resetToken, expiresAt, email]);
         
         await resend.emails.send({
-          from: process.env.FROM_EMAIL || "no-reply@yourapp.com",
+          from: process.env.FROM_EMAIL,
           to: email,
           subject: "Password Reset Code",
           html: `
