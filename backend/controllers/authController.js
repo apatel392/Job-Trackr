@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const validatePassword = require('../middleware/passwordValidator')
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 require('dotenv').config();
 
 exports.register = async(req, res) => {
@@ -56,6 +57,7 @@ exports.login = async(req,res) => {
 
 exports.forgotpassword = async(req, res) => {
     const {email} = req.body;
+    const resend = new Resend(process.env.RESEND_API_KEY);
     try {
         const user = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
         if(user.rows.length===0) {
@@ -67,29 +69,28 @@ exports.forgotpassword = async(req, res) => {
 
         await pool.query('UPDATE users SET reset_token=$1, reset_token_expires=$2 WHERE email=$3',[resetToken, expiresAt, email]);
         
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            }, 
+        await resend.emails.send({
+          from: process.env.FROM_EMAIL || "no-reply@yourapp.com",
+          to: email,
+          subject: "Password Reset Code",
+          html: `
+            <p>Your password reset code is:</p>
+            <h2>${resetToken}</h2>
+            <p>This code expires in <strong>15 minutes</strong>.</p>
+          `,
         });
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: "Password Reset Code",
-            text: `Your reset code is: ${resetToken}. It expires in 15 minutes.`,
+        return res.status(200).json({
+            message: "Reset code sent to email",
         });
-
-        res.json({ message: "Reset code sent to email."});
     } 
-    catch(error) {
-        console.error("Forgot password error:", error);
-        res.json(500).json({error: "Server error"});
-    }
+    catch (error) {
+    console.error("Forgot password error:", error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
 };
 
 exports.resetpassword = async(req,res) => {
