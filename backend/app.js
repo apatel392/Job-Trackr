@@ -6,7 +6,7 @@ const appRoutes = require('./routes/appRoutes');
 const interviewRoutes = require('./routes/interviewRoutes');
 
 const app = express();
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173','http://jobtrackr-frontend.s3-website.us-east-2.amazonaws.com'];
+const allowedOrigins = ['https://jobtrackr-frontend-3ep6.onrender.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
