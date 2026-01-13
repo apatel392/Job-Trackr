@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const validatePassword = require('../middleware/passwordValidator')
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const { Resend } = require("resend");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 
 exports.register = async(req, res) => {
@@ -69,15 +70,11 @@ exports.forgotpassword = async(req, res) => {
 
         await pool.query('UPDATE users SET reset_token=$1, reset_token_expires=$2 WHERE email=$3',[resetToken, expiresAt, email]);
         
-        await resend.emails.send({
-          from: process.env.FROM_EMAIL,
-          to: email,
-          subject: "Password Reset Code",
-          html: `
-            <p>Your password reset code is:</p>
-            <h2>${resetToken}</h2>
-            <p>This code expires in <strong>15 minutes</strong>.</p>
-          `,
+        await sgMail.send({
+        to: email,
+        from: "aksharpatel2601@gmail.com", // ✅ default allowed sender
+        subject: "Password Reset Code",
+        text: `Your password reset code is ${resetToken}. It expires in 15 minutes.`,
         });
 
         return res.status(200).json({
