@@ -58,7 +58,6 @@ exports.login = async(req,res) => {
 
 exports.forgotpassword = async(req, res) => {
     const {email} = req.body;
-    const resend = new Resend(process.env.RESEND_API_KEY);
     try {
         const user = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
         if(user.rows.length===0) {
